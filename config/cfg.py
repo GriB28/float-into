@@ -13,7 +13,9 @@ class PATH:
 
 BINARIES_LINUX = (
     PATH.BIN + "binary",
+    PATH.BIN + "overflow"
 )
 BINARIES_WINDOWS = (
     PATH.BIN + "binary.exe",
+    PATH.BIN + "overflow.exe"
 )
