@@ -12,8 +12,8 @@ class PATH:
 
 
 BINARIES_LINUX = (
-    PATH.BIN + "binary"
+    PATH.BIN + "binary",
 )
 BINARIES_WINDOWS = (
-    PATH.BIN + "binary.exe"
+    PATH.BIN + "binary.exe",
 )
