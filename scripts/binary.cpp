@@ -49,6 +49,6 @@ int main() {
             cout << answer[i];
         }
     else cout << answer;
-    cout << FAINT << LIGHTBLUE << "> finished\n\n" << RESET;
+    cout << '\n' << FAINT << LIGHTBLUE << "> finished\n\n" << RESET;
     return 0;
 }
