@@ -9,4 +9,15 @@ namespace color {
     static const string FAINT = "\x1b[2m";
     static const string RESET = "\x1b[0m";
 }
+
+namespace utils {
+    union float_mirroring {
+        float f;
+        unsigned u;
+    };
+
+    string uint2bin(unsigned number);
+    string float2bin(const float &number);
+    void print_float_binary_line(const string &bin_line);
+}
 #endif
