@@ -1,0 +1,13 @@
+/.venv/
+/.idea/
+/cmake-build-debug/
+/CMakeLists.txt
+/*__pycache__/
+
+/*.exe
+/*.o
+/*.csv
+
+/data*/
+/*.txt
+/text/
