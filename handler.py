@@ -4,9 +4,9 @@ from os.path import exists
 from time import time
 from platform import system as platform_name
 import matplotlib.pyplot as plt
+import numpy as np
 
 from config import cfg, j2
-# from lib import sorts, utils
 
 
 def handle(c: list[str], settings_link: dict[str, ...]):
@@ -25,8 +25,11 @@ def handle(c: list[str], settings_link: dict[str, ...]):
             print(F.LIGHTBLUE_EX + " > binary <variable_type> <value>")
             print(F.LIGHTBLUE_EX + " > overflow")
             print(F.LIGHTBLUE_EX + " > infinite_cycle")
+            print(F.LIGHTBLUE_EX + " > numint <num_of_steps> <x_0> <x_1> <variable_type> <filename> <graph_name>")
+            print(F.LIGHTBLUE_EX + " > numint_range <max_num_of_steps> <x_0> <x_1> <variable_type> <filename> <graph_name>")
             print(F.LIGHTBLUE_EX + " > render <filename> <scale_type> [<color>]")
             print(F.LIGHTBLUE_EX + " > combine {<filename_1> <filename_2> ...} <scale_type> {<color_1> <color_2> ...}")
+            print(F.LIGHTBLUE_EX + " > combine quadratic_plot <x_0> <x_1> {<color_1> <color_2> <color_3>}")
             print(F.LIGHTBLUE_EX + " > script <filename>")
             print()
             print()
@@ -53,6 +56,12 @@ def handle(c: list[str], settings_link: dict[str, ...]):
 
                     print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "infinite_cycle")
                     print(F.GREEN + S.DIM + "  > " + S.NORMAL + "tries to overflow a float with adding a 1")
+
+                    print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "numint")
+                    print(F.GREEN + S.DIM + "  > " + S.NORMAL + "numerically integrates function f(x) = x^2 from x_0 to x_1 (see params.)")
+
+                    print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "numint_range")
+                    print(F.GREEN + S.DIM + "  > " + S.NORMAL + "'numint', but with range of steps")
 
                     print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "render")
                     print(F.GREEN + S.DIM + "  > " + S.NORMAL + "renders a plot from a datafile with given name and parameters")
@@ -109,9 +118,7 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                 if type_ not in ("f", "u", "float", "uint", "unsigned"):
                     raise ValueError("unable to parse given type")
 
-                is_float = False
-                if type_ in ("f", "float"):
-                    is_float = True
+                is_float = type_ in ("f", "float")
 
                 value = float(c[3]) if is_float else int(c[3])
 
@@ -144,19 +151,62 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     print(F.RED + S.DIM + "> current platform is not supported... yet...")
                     exit()
 
+            if c[1] == 'numint' or c[1] == 'numint_range':
+                total = int(c[2])
+                x_0 = float(c[3])
+                x_1 = float(c[4])
+                type_ = c[5]
+                if type_ not in ("f", "d", "float", "double"):
+                    raise ValueError("unable to parse given type")
+                is_float = type_ in ("f", "float")
+                output_file_name = c[6].replace('.csv', '')
+                graph_name = '_'.join(c[7:])
+                x_axis = "X" if c[1] == 'numint' else 'N'
+                y_axis = "Y" if c[1] == 'numint' else 'resulting_integral_value'
+                with open(f"data/{c[1]}_input.csv", 'w') as csv:
+                    print(total, x_0, x_1, 'f' if is_float else 'd', output_file_name, graph_name, x_axis, y_axis, file=csv)
+
+                if platform_name() == 'Linux':
+                    system(f"./{cfg.PATH.BIN_local}{c[1]}")
+                elif platform_name() == 'Windows':
+                    system(f"{cfg.PATH.BIN_local}{c[1]}.exe")
+                else:
+                    print(F.RED + S.DIM + "> current platform is not supported... yet...")
+                    exit()
+
+
             if c[1] == 'render':
                 filename = c[2]
-                scale = c[3].lower()
-                color = c[4] if len(c) > 4 else '#fa8072'
+                if filename in ('quadratic', 'quadratic_ddt', 'quadratic_int'):
+                    x_0 = float(c[3])
+                    x_1 = float(c[4])
+                    color = c[5] if len(c) > 5 else '#fa8072'
+                    scale = 'linear'
 
-                print(F.LIGHTBLACK_EX + "reading a datafile...")
-                with open(filename) as csv:
-                    legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
-                    x, y = list(), list()
-                    for line in csv.readlines():
-                        line = line.split(',')
-                        x.append(int(line[0]))
-                        y.append(int(line[1]))
+                    print(F.LIGHTBLACK_EX + "rendering...")
+                    x = np.linspace(x_0, x_1, 10000)
+                    if filename == 'quadratic':
+                        y = x ** 2
+                        legend_0 = "y(x) = x²"
+                    elif filename == 'quadratic_ddt':
+                        y = x
+                        legend_0 = "y'(x) = x"
+                    else:
+                        y = x ** 3 / 3
+                        legend_0 = "int y(x)dx = x³ / 3"
+                    legend = (legend_0, "X", "Y")
+                else:
+                    scale = c[3].lower()
+                    color = c[4] if len(c) > 4 else '#fa8072'
+
+                    print(F.LIGHTBLACK_EX + "reading a datafile...")
+                    with open(filename) as csv:
+                        legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
+                        x, y = list(), list()
+                        for line in csv.readlines():
+                            line = line.split(',')
+                            x.append(float(line[0]))
+                            y.append(float(line[1]))
 
                 print(F.LIGHTBLACK_EX + "rendering...")
                 plt.figure(figsize=(settings_link["plot_fig_x"], settings_link["plot_fig_y"]))
@@ -176,42 +226,61 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                 print(F.GREEN + "Successfully saved at", F.YELLOW + S.DIM + save_file)
 
             elif c[1] == 'combine':
-                i = 2
-                filenames = [c[i][1:]]
-                i += 1
-                while i < len(c) and c[i].count('}') == 0:
-                    filenames.append(c[i])
+                if c[2] == 'quadratic_plots':
+                    x_0 = float(c[3])
+                    x_1 = float(c[4])
+                    if len(c) > 6:
+                        colors = c[5:8]
+                    else:
+                        colors = ['#fa8072', '#72b8fa', '#b472fa']
+                    scale = 'linear'
+                    plt.figure(figsize=(settings_link["plot_fig_x"], settings_link["plot_fig_y"]))
+
+                    print(F.LIGHTBLACK_EX + "rendering #0...")
+                    x = np.linspace(x_0, x_1, 10000)
+                    plt.scatter(x, x ** 2, color=colors[0], s=settings_link["plot_dot_size"], label="y(x) = x²")
+                    print(F.LIGHTBLACK_EX + "rendering #1...")
+                    plt.scatter(x, x, color=colors[1], s=settings_link["plot_dot_size"], label="y'(x) = x")
+                    print(F.LIGHTBLACK_EX + "rendering #2...")
+                    plt.scatter(x, x ** 3 / 3, color=colors[2], s=settings_link["plot_dot_size"], label="int y(x)dx = x³ / 3")
+                    global_legend = [None, "X", "Y"]
+                else:
+                    i = 2
+                    filenames = [c[i][1:]]
                     i += 1
-                filenames.append(c[i][:-1])
-                if len(filenames) < 2:
-                    raise IndexError("less than 2 subplots")
+                    while i < len(c) and c[i].count('}') == 0:
+                        filenames.append(c[i])
+                        i += 1
+                    filenames.append(c[i][:-1])
+                    if len(filenames) < 2:
+                        raise IndexError("less than 2 subplots")
 
-                i += 1
-                scale = c[i].lower()
-                i += 1
-                colors = [c[i][1:]] + c[i+1:i+len(filenames)-1] + [c[i+len(filenames)-1][:-1]]
+                    i += 1
+                    scale = c[i].lower()
+                    i += 1
+                    colors = [c[i][1:]] + c[i+1:i+len(filenames)-1] + [c[i+len(filenames)-1][:-1]]
 
-                plt.figure(figsize=(settings_link["plot_fig_x"], settings_link["plot_fig_y"]))
+                    plt.figure(figsize=(settings_link["plot_fig_x"], settings_link["plot_fig_y"]))
 
-                with open(filenames[0]) as csv:
-                    global_legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
-                    x_global, y = list(), list()
-                    for line in csv.readlines():
-                        line = line.split(',')
-                        x_global.append(int(line[0]))
-                        y.append(int(line[1]))
-                print(F.LIGHTBLACK_EX + f"rendering #{0}: x_global={len(x_global)}, y={len(y)}")
-                plt.scatter(x_global, y, color=colors[0], s=settings_link["plot_dot_size"], label=global_legend[0])
-
-                for j in range(1, len(filenames)):
-                    with open(filenames[j]) as csv:
-                        legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
-                        y = list()
+                    with open(filenames[0]) as csv:
+                        global_legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
+                        x_global, y = list(), list()
                         for line in csv.readlines():
                             line = line.split(',')
-                            y.append(int(line[1]))
-                    print(F.LIGHTBLACK_EX + f"rendering #{j}: [x_global], y={len(y)}")
-                    plt.scatter(x_global, y, color=colors[j], s=settings_link["plot_dot_size"], label=legend[0])
+                            x_global.append(float(line[0]))
+                            y.append(float(line[1]))
+                    print(F.LIGHTBLACK_EX + f"rendering #{0}: x_global={len(x_global)}, y={len(y)}")
+                    plt.scatter(x_global, y, color=colors[0], s=settings_link["plot_dot_size"], label=global_legend[0])
+
+                    for j in range(1, len(filenames)):
+                        with open(filenames[j]) as csv:
+                            legend = list(map(lambda s: s.replace('_', ' '), csv.readline().strip()[1:].split('\t')))
+                            y = list()
+                            for line in csv.readlines():
+                                line = line.split(',')
+                                y.append(float(line[1]))
+                        print(F.LIGHTBLACK_EX + f"rendering #{j}: [x_global], y={len(y)}")
+                        plt.scatter(x_global, y, color=colors[j], s=settings_link["plot_dot_size"], label=legend[0])
                 plt.xscale(scale)
                 plt.yscale(scale)
                 plt.title("merged plots")

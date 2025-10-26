@@ -1,6 +1,8 @@
 #include <iostream>
+#include <fstream>
 #include "lib.h"
 using std::cout;
+using std::fstream;
 
 
 string utils::uint2bin(unsigned number) {
@@ -28,3 +30,14 @@ void utils::print_float_binary_line(const string &bin_line) {
         cout << bin_line[i];
     }
 }
+
+
+void utils::prepare_result_file(fstream *&filestream, const string &graph_name, const string &x_axis_name, const string &y_axis_name) {
+    stream_link = filestream;
+    *stream_link << '#' << graph_name << '\t' << x_axis_name << '\t' << y_axis_name << '\n';
+}
+
+void utils::add_result_d(const double &x, const double &y) { *stream_link << x << ',' << y << '\n'; }
+void utils::add_result_f(const float &x, const float &y) { *stream_link << x << ',' << y << '\n'; }
+void utils::add_result_ud(const unsigned &x, const double &y) { *stream_link << x << ',' << y << '\n'; }
+void utils::add_result_uf(const unsigned &x, const float &y) { *stream_link << x << ',' << y << '\n'; }

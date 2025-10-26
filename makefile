@@ -11,3 +11,9 @@ overflow:
 
 infinite_cycle:
 	g++ scripts/infinite_cycle.cpp lib/utils.cpp -O2 -o bin/infinite_cycle
+
+numint:
+	g++ scripts/numint.cpp lib/utils.cpp -O2 -o bin/numint
+
+numint_range:
+	g++ scripts/numint_range.cpp lib/utils.cpp -O2 -o bin/numint_range
