@@ -12,6 +12,7 @@ string utils::uint2bin(unsigned number) {
         else answer = '1' + answer;
         number >>= 1;
     }
+    while (answer.length() < 32) answer = '0' + answer;
     return answer;
 }
 
