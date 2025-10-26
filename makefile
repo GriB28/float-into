@@ -8,3 +8,6 @@ binary:
 
 overflow:
 	g++ scripts/overflow.cpp lib/utils.cpp -O2 -o bin/overflow
+
+infinite_cycle:
+	g++ scripts/infinite_cycle.cpp lib/utils.cpp -O2 -o bin/infinite_cycle

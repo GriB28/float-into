@@ -41,5 +41,7 @@ settings = j2.fromfile(cfg.PATH.SETTINGS)
 while c[0] != 'exit':
     handle(c, settings)
     c = input(F.GREEN + ">>> " + S.RESET_ALL).strip().split()
+    while len(c) == 0:
+        c = input(F.GREEN + ">>> " + S.RESET_ALL).strip().split()
 
 print(F.LIGHTBLACK_EX + "finishing...")

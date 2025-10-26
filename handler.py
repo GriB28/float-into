@@ -23,6 +23,8 @@ def handle(c: list[str], settings_link: dict[str, ...]):
             print(F.LIGHTBLUE_EX + "settings read | set <key> <value>")
             print(F.LIGHTBLUE_EX + "call <call-string>")
             print(F.LIGHTBLUE_EX + " > binary <variable_type> <value>")
+            print(F.LIGHTBLUE_EX + " > overflow")
+            print(F.LIGHTBLUE_EX + " > infinite_cycle")
             print(F.LIGHTBLUE_EX + " > render <filename> <scale_type> [<color>]")
             print(F.LIGHTBLUE_EX + " > combine {<filename_1> <filename_2> ...} <scale_type> {<color_1> <color_2> ...}")
             print(F.LIGHTBLUE_EX + " > script <filename>")
@@ -42,6 +44,15 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     print(F.CYAN + S.NORMAL + "operations with project settings: reading/rewriting values")
                 elif command == 'call':
                     print(F.CYAN + S.NORMAL + "calls a script or a command:")
+
+                    print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "binary")
+                    print(F.GREEN + S.DIM + "  > " + S.NORMAL + "prints bits of given number (in given digital format)")
+
+                    print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "overflow")
+                    print(F.GREEN + S.DIM + "  > " + S.NORMAL + "tries to overflow a float by multiplication by 10")
+
+                    print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "infinite_cycle")
+                    print(F.GREEN + S.DIM + "  > " + S.NORMAL + "tries to overflow a float with adding a 1")
 
                     print(F.CYAN + S.DIM + " >", F.CYAN + S.BRIGHT + "render")
                     print(F.GREEN + S.DIM + "  > " + S.NORMAL + "renders a plot from a datafile with given name and parameters")
@@ -96,7 +107,7 @@ def handle(c: list[str], settings_link: dict[str, ...]):
             if c[1] == 'binary':
                 type_ = c[2].lower()
                 if type_ not in ("f", "u", "float", "uint", "unsigned"):
-                    raise ValueError("unable to parse type_")
+                    raise ValueError("unable to parse given type")
 
                 is_float = False
                 if type_ in ("f", "float"):
@@ -111,6 +122,24 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     system(f"./{cfg.PATH.BIN_local}binary")
                 elif platform_name() == 'Windows':
                     system(f"{cfg.PATH.BIN_local}binary.exe")
+                else:
+                    print(F.RED + S.DIM + "> current platform is not supported... yet...")
+                    exit()
+
+            if c[1] == 'overflow':
+                if platform_name() == 'Linux':
+                    system(f"./{cfg.PATH.BIN_local}overflow")
+                elif platform_name() == 'Windows':
+                    system(f"{cfg.PATH.BIN_local}overflow.exe")
+                else:
+                    print(F.RED + S.DIM + "> current platform is not supported... yet...")
+                    exit()
+
+            if c[1] == 'infinite_cycle':
+                if platform_name() == 'Linux':
+                    system(f"./{cfg.PATH.BIN_local}infinite_cycle")
+                elif platform_name() == 'Windows':
+                    system(f"{cfg.PATH.BIN_local}infinite_cycle.exe")
                 else:
                     print(F.RED + S.DIM + "> current platform is not supported... yet...")
                     exit()
@@ -155,12 +184,12 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     i += 1
                 filenames.append(c[i][:-1])
                 if len(filenames) < 2:
-                    raise IndexError("less then 2 subplots")
+                    raise IndexError("less than 2 subplots")
 
                 i += 1
                 scale = c[i].lower()
                 i += 1
-                colors = [c[i][1:]]+ c[i+1:i+len(filenames)-1] + [c[i+len(filenames)-1][:-1]]
+                colors = [c[i][1:]] + c[i+1:i+len(filenames)-1] + [c[i+len(filenames)-1][:-1]]
 
                 plt.figure(figsize=(settings_link["plot_fig_x"], settings_link["plot_fig_y"]))
 
