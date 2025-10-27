@@ -18,18 +18,18 @@ int main() {
     cout << FAINT << LIGHTBLUE << "> reading config...\n" << RESET;
     fstream data("data/numint_range_input.csv", std::ios::in);
 
-    unsigned N_max, N_min;
+    unsigned N_max, N_min, dN;
     double x_0, x_1;
     char type;
     string output_file, graph_name, Ox, Oy;
-    data >> N_min >> N_max >> x_0 >> x_1 >> type;
+    data >> N_min >> N_max >> dN >> x_0 >> x_1 >> type;
     data >> output_file >> graph_name >> Ox >> Oy;
 
     auto *result = new fstream("data/" + output_file + ".csv", std::ios::out);
     utils::prepare_result_file(result, graph_name, Ox, Oy);
 
     cout << FAINT << LIGHTBLUE << "> configuring is over.\nstarting calculating...\n" << RESET << LIGHTBLUE;
-    for (unsigned N = N_min; N <= N_max; N++) {
+    for (unsigned N = N_min; N <= N_max; N += dN) {
         double sum_d = 0;
         float sum_f = 0;
         const float step_f = (float)(x_1 - x_0) / N;

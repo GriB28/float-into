@@ -151,26 +151,50 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     print(F.RED + S.DIM + "> current platform is not supported... yet...")
                     exit()
 
-            if c[1] == 'numint' or c[1] == 'numint_range':
-                total_min = int(c[2])
-                total_max = int(c[3])
-                x_0 = float(c[4])
-                x_1 = float(c[5])
-                type_ = c[6]
+            if c[1] == 'numint':
+                total = int(c[2])
+                x_0 = float(c[3])
+                x_1 = float(c[4])
+                type_ = c[5]
                 if type_ not in ("f", "d", "float", "double"):
                     raise ValueError("unable to parse given type")
                 is_float = type_ in ("f", "float")
-                output_file_name = c[7].replace('.csv', '')
-                graph_name = '_'.join(c[8:])
-                x_axis = "X" if c[1] == 'numint' else 'N'
-                y_axis = "Y" if c[1] == 'numint' else 'resulting_integral_value'
-                with open(f"data/{c[1]}_input.csv", 'w') as csv:
-                    print(total_min, total_max, x_0, x_1, 'f' if is_float else 'd', output_file_name, graph_name, x_axis, y_axis, file=csv)
+                output_file_name = c[6].replace('.csv', '')
+                graph_name = '_'.join(c[7:])
+                x_axis = "X"
+                y_axis = "Y"
+                with open("data/numint_input.csv", 'w') as csv:
+                    print(total, x_0, x_1, 'f' if is_float else 'd', output_file_name, graph_name, x_axis, y_axis, file=csv)
 
                 if platform_name() == 'Linux':
-                    system(f"./{cfg.PATH.BIN_local}{c[1]}")
+                    system(f"./{cfg.PATH.BIN_local}numint")
                 elif platform_name() == 'Windows':
-                    system(f"{cfg.PATH.BIN_local}{c[1]}.exe")
+                    system(f"{cfg.PATH.BIN_local}numint.exe")
+                else:
+                    print(F.RED + S.DIM + "> current platform is not supported... yet...")
+                    exit()
+
+            if c[1] == 'numint_range':
+                total_min = int(c[2])
+                total_max = int(c[3])
+                delta = int(c[4])
+                x_0 = float(c[5])
+                x_1 = float(c[6])
+                type_ = c[7]
+                if type_ not in ("f", "d", "float", "double"):
+                    raise ValueError("unable to parse given type")
+                is_float = type_ in ("f", "float")
+                output_file_name = c[8].replace('.csv', '')
+                graph_name = '_'.join(c[9:])
+                x_axis = 'N'
+                y_axis = 'resulting_integral_value'
+                with open("data/numint_range_input.csv", 'w') as csv:
+                    print(total_min, total_max, delta, x_0, x_1, 'f' if is_float else 'd', output_file_name, graph_name, x_axis, y_axis, file=csv)
+
+                if platform_name() == 'Linux':
+                    system(f"./{cfg.PATH.BIN_local}numint_range")
+                elif platform_name() == 'Windows':
+                    system(f"{cfg.PATH.BIN_local}numint_range.exe")
                 else:
                     print(F.RED + S.DIM + "> current platform is not supported... yet...")
                     exit()
