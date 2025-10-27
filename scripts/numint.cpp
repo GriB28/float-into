@@ -18,11 +18,11 @@ int main() {
     cout << FAINT << LIGHTBLUE << "> reading config...\n" << RESET;
     fstream data("data/numint_input.csv", std::ios::in);
 
-    unsigned N;
+    unsigned N, _tmp;
     double x_0, x_1;
     char type;
     string output_file, graph_name, Ox, Oy;
-    data >> N >> x_0 >> x_1 >> type;
+    data >> _tmp >> N >> x_0 >> x_1 >> type;
     data >> output_file >> graph_name >> Ox >> Oy;
 
     auto *result = new fstream("data/" + output_file + ".csv", std::ios::out);

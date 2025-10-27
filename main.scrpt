@@ -1,10 +1,10 @@
-call numint 1000 0.0 1.0 f single_int_f Дискретный вид первообразной (метод левых прямоугольников) [float]
+call numint 1 1000 0.0 1.0 f single_int_f Дискретный вид первообразной (метод левых прямоугольников) [float]
 
-call numint 1000 0.0 1.0 d single_int_d Дискретный вид первообразной (метод левых прямоугольников) [double]
+call numint 1 1000 0.0 1.0 d single_int_d Дискретный вид первообразной (метод левых прямоугольников) [double]
 
-call numint_range 10000 0.0 1.0 f range_int_f Зависимость значений интеграла от частоты дискретизации [float]
+call numint_range 50000 100000 0.0 1.0 f range_int_f Зависимость значений интеграла от частоты дискретизации [float]
 
-call numint_range 10000 0.0 1.0 d range_int_d Зависимость значений интеграла от частоты дискретизации [double]
+call numint_range 50000 100000 0.0 1.0 d range_int_d Зависимость значений интеграла от частоты дискретизации [double]
 
 call combine {data/single_int_f.csv data/single_int_d.csv} linear {#ff0000 #0000ff}
 call combine {data/range_int_f.csv data/range_int_d.csv} linear {#ff0000 #0000ff}
