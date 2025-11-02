@@ -10,15 +10,15 @@ using std::fstream;
 using std::string;
 
 
-float f_float(float x) { return x * x; }
-double f_double(double x) { return x * x; }
+float f_float(float x) { return 10 * x * x + .1 * x; }
+double f_double(double x) { return 10 * x * x + .1 * x; }
 
 
 int main() {
     cout << FAINT << LIGHTBLUE << "> reading config...\n" << RESET;
     fstream data("data/numint_input.csv", std::ios::in);
 
-    unsigned N;
+    unsigned long long N;
     double x_0, x_1;
     char type;
     string output_file, graph_name, Ox, Oy;
@@ -33,7 +33,7 @@ int main() {
     float sum_f = 0;
     const float step_f = (float)(x_1 - x_0) / N;
     const double step_d = (x_1 - x_0) / N;
-    for (unsigned delta = 0; delta < N; delta++) {
+    for (unsigned long long delta = 0; delta < N; delta++) {
         const long percent = 1000 * delta / N;
         cout << "\r\b> progress: " << delta << " / " << N << " (" << percent / 10 << '.' << percent % 10 << "%)";
         if (type == 'f') {

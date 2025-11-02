@@ -211,14 +211,14 @@ def handle(c: list[str], settings_link: dict[str, ...]):
                     print(F.LIGHTBLACK_EX + "rendering...")
                     x = np.linspace(x_0, x_1, 10000)
                     if filename == 'quadratic':
-                        y = x ** 2
-                        legend_0 = "y(x) = x²"
+                        y = 10 * x ** 2 + .1 * x
+                        legend_0 = "y(x) = 10x² + 0.1x"
                     elif filename == 'quadratic_ddt':
-                        y = x
-                        legend_0 = "y'(x) = x"
+                        y = 20 * x + .1
+                        legend_0 = "y'(x) = 20x + 0.1"
                     else:
-                        y = x ** 3 / 3
-                        legend_0 = "int y(x)dx = x³ / 3"
+                        y = 10 * x ** 3 / 3 + .05 * x ** 2
+                        legend_0 = "int y(x)dx = (10/3)x³ + 0.05x²"
                     legend = (legend_0, "X", "Y")
                 else:
                     scale = c[3].lower()

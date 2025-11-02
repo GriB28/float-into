@@ -10,15 +10,15 @@ using std::fstream;
 using std::string;
 
 
-float f_float(float x) { return x * x; }
-double f_double(double x) { return x * x; }
+float f_float(float x) { return 10 * x * x + .1 * x; }
+double f_double(double x) { return 10 * x * x + .1 * x; }
 
 
 int main() {
     cout << FAINT << LIGHTBLUE << "> reading config...\n" << RESET;
     fstream data("data/numint_range_input.csv", std::ios::in);
 
-    unsigned N_max, N_min, dN;
+    unsigned long long N_max, N_min, dN;
     double x_0, x_1;
     char type;
     string output_file, graph_name, Ox, Oy;
@@ -29,14 +29,18 @@ int main() {
     utils::prepare_result_file(result, graph_name, Ox, Oy);
 
     cout << FAINT << LIGHTBLUE << "> configuring is over.\nstarting calculating...\n" << RESET << LIGHTBLUE;
-    for (unsigned N = N_min; N <= N_max; N += dN) {
+    for (unsigned long long N = N_min; N <= N_max; N += dN) {
+        long last_percent = 0;
         double sum_d = 0;
         float sum_f = 0;
         const float step_f = (float)(x_1 - x_0) / N;
         const double step_d = (x_1 - x_0) / N;
-        for (unsigned delta = 0; delta < N; delta++) {
+        for (unsigned long long delta = 0; delta < N; delta++) {
             const long percent = 1000 * delta / N;
-            cout << "\r\b> progress (" << N << " / " << N_max << "): " << delta << " / " << N << " (" << percent / 10 << '.' << percent % 10 << "%)    ";
+            if (percent - last_percent >= 3) {
+                last_percent = percent;
+                cout << "\r\b> progress (" << N << " / " << N_max << "): " << delta << " / " << N << " (" << percent / 10 << '.' << percent % 10 << "%)    ";
+            }
             if (type == 'f')
                 sum_f += f_float((float)x_0 + delta * step_f);
             else if (type == 'd')
